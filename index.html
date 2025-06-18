@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"Be-Lights"グッズストア</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 15px;
+        }
+
+        .size-selector {
+            margin-bottom: 15px;
+        }
+
+        .size-selector label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .size-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quantity-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn.minus {
+            background: #f44336;
+            color: white;
+        }
+
+        .quantity-btn.minus:hover {
+            background: #d32f2f;
+        }
+
+        .quantity-btn.plus {
+            background: #4caf50;
+            color: white;
+        }
+
+        .quantity-btn.plus:hover {
+            background: #388e3c;
+        }
+
+        .quantity-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .quantity-display {
+            background: #f5f5f5;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .customer-form {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .customer-form h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #f44336;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .order-summary h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .item-details h4 {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .item-details p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .item-total {
+            font-weight: 600;
+            color: #2196f3;
+        }
+
+        .total-section {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .total-amount {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .total-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .total-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .order-btn {
+            width: 100%;
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .order-btn:hover {
+            background: #1976d2;
+        }
+
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .new-order-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+
+        .image-upload {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .image-upload-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .image-upload input {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .image-upload-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌟 "Be-Lights"グッズストア 🌟</h1>
+            <p>お気に入りのグッズを選んでご注文ください</p>
+        </header>
+
+        <div class="products-grid" id="products-grid">
+            <!-- 商品が動的に追加されます -->
+        </div>
+
+        <div class="customer-form">
+            <h2>注文者情報</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>お名前 <span class="required">*</span></label>
+                    <input type="text" id="customer-name" placeholder="山田太郎">
+                </div>
+                <div class="form-group">
+                    <label>メールアドレス <span class="required">*</span></label>
+                    <input type="email" id="customer-email" placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label>電話番号</label>
+                    <input type="tel" id="customer-phone" placeholder="090-1234-5678">
+                </div>
+            </div>
+        </div>
+
+        <div class="order-summary">
+            <h2>注文内容</h2>
+            <div id="order-items"></div>
+            <div class="total-section" id="total-section" style="display: none;">
+                <div class="total-amount">
+                    <span class="total-label">合計金額:</span>
+                    <span class="total-value" id="total-amount">¥0</span>
+                </div>
+                <button class="order-btn" onclick="completeOrder()">注文を確定する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功モーダル -->
+    <div class="success-modal" id="success-modal" style="display: none;">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h2>注文完了！</h2>
+            <p>ご注文ありがとうございました。<br>確認メールを送信いたしました。</p>
+            <div id="order-details"></div>
+            <button class="new-order-btn" onclick="startNewOrder()">新しい注文を開始</button>
+        </div>
+    </div>
+
+    <!-- 画像アップロードモーダル -->
+    <div class="image-upload" id="image-upload-modal" style="display: none;">
+        <div class="image-upload-content">
+            <h3>商品画像を変更</h3>
+            <p id="selected-product-name"></p>
+            <input type="url" id="image-url" placeholder="画像のURLを入力してください">
+            <div>
+                <button class="image-upload-btn" onclick="updateProductImage()">更新</button>
+                <button class="image-upload-btn" onclick="closeImageUpload()" style="background: #666;">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 商品データ
+        const products = [
+            {
+                id: 1,
+                name: '「黒ロゴ」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 2,
+                name: '「白ロゴ」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 3,
+                name: '「文字ロゴ」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 4,
+                name: '「びx黒」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 5,
+                name: '「びx白」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 6,
+                name: '「夢xカラー文字」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 7,
+                name: '「夢x白文字」缶バッジ',
+                price: 300,
+                image: 'https://images.unsplash.com/photo-1607734834519-d8576ae60ea4?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 8,
+                name: '「ロゴ」ランチバッグ',
+                price: 1500,
+                image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 9,
+                name: '「び」ランチバッグ',
+                price: 1500,
+                image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 10,
+                name: 'シール',
+                price: 200,
+                image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 11,
+                name: '巾着（小）',
+                price: 800,
+                image: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 12,
+                name: 'スウェット上下セット(春夏用)',
+                price: 6000,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
+                hasSizes: true,
+                sizeOptions: ['140', '150', 'S', 'M', 'L', 'XL']
+            },
+            {
+                id: 13,
+                name: 'スウェットトレーナー(春夏用)',
+                price: 3500,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
+                hasSizes: true,
+                sizeOptions: ['140', '150', 'S', 'M', 'L', 'XL']
+            },
+            {
+                id: 14,
+                name: 'スウェットパンツ(春夏用)',
+                price: 2800,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
+                hasSizes: true,
+                sizeOptions: ['140', '150', 'S', 'M', 'L', 'XL']
+            },
+            {
+                id: 15,
+                name: 'メンバーTシャツ',
+                price: 2500,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
+                hasSizes: false
+            },
+            {
+                id: 16,
+                name: 'メンバーパーカー',
+                price: 4000,
+                image: 'https://images.unsplash.com/photo-1556821840-3a9c6dcb0044?w=300&h=300&fit=crop',
+                hasSizes: false
+            }
+        ];
+
+        // カートデータ
+        let cart = {};
+        let selectedProductForImage = null;
+
+        // 商品を表示
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const cartKey = product.hasSizes ? `${product.id}_default` : product.id;
+                const quantity = cart[cartKey] || 0;
+                
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                let sizeSelector = '';
+                if (product.hasSizes) {
+                    sizeSelector = `
+                        <div class="size-selector">
+                            <label>サイズ:</label>
+                            <select id="size-${product.id}" onchange="updateSizeSelection(${product.id})">
+                                ${product.sizeOptions.map(size => `<option value="${size}">${size}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                }
+
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onclick="openImageUpload(${product.id})">
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-price">¥${product.price.toLocaleString()}</p>
+                        ${sizeSelector}
+                        <div class="quantity-controls">
+                            <div class="quantity-buttons">
+                                <button class="quantity-btn minus" onclick="removeFromCart(${product.id})" ${quantity === 0 ? 'disabled' : ''}>−</button>
+                                <span class="quantity-display">${quantity}</span>
+                                <button class="quantity-btn plus" onclick="addToCart(${product.id})">+</button>
+                            </div>
+                            <span>🛒</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        // サイズ選択の更新
+        function updateSizeSelection(productId) {
+            // 現在のサイズでのカート内容をクリア
+            Object.keys(cart).forEach(key => {
+                if (key.startsWith(`${productId}_`)) {
+                    delete cart[key];
+                }
+            });
+            renderProducts();
+            renderOrderSummary();
+        }
+
+        // カートに追加
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            let cartKey = productId;
+            
+            if (product.hasSizes) {
+                const sizeSelect = document.getElementById(`size-${productId}`);
+                const selectedSize = sizeSelect.value;
+                cartKey = `${productId}_${selectedSize}`;
+            }
+            
+            cart[cartKey] = (cart[cartKey] || 0) + 1;
+            renderProducts();
+            renderOrderSummary();
+        }
+
+        // カートから削除
+        function removeFromCart(productId) {
+            const product = products.find(p => p.id === productId);
+            let cartKey = productId;
+            
+            if (product.hasSizes) {
+                const sizeSelect = document.getElementById(`size-${productId}`);
+                const selectedSize = sizeSelect.value;
+                cartKey = `${productId}_${selectedSize}`;
+            }
+            
+            if (cart[cartKey] > 1) {
+                cart[cartKey]--;
+            } else {
+                delete cart[cartKey];
+            }
+            renderProducts();
+            renderOrderSummary();
+        }
+
+        // 注文サマリーを表示
+        function renderOrderSummary() {
+            const orderItems = document.getElementById('order-items');
+            const totalSection = document.getElementById('total-section');
+            
+            if (Object.keys(cart).length === 0) {
+                orderItems.innerHTML = '<div class="empty-cart">商品を選択してください</div>';
+                totalSection.style.display = 'none';
+                return;
+            }
+
+            let itemsHTML = '';
+            let total = 0;
+
+            Object.entries(cart).forEach(([cartKey, quantity]) => {
+                const [productId, size] = cartKey.split('_');
+                const product = products.find(p => p.id === parseInt(productId));
+                const itemTotal = product.price * quantity;
+                total += itemTotal;
+
+                const displayName = size && size !== 'default' ? `${product.name} (${size})` : product.name;
+
+                itemsHTML += `
+                    <div class="order-item">
+                        <div class="item-info">
+                            <img src="${product.image}" alt="${product.name}" class="item-image">
+                            <div class="item-details">
+                                <h4>${displayName}</h4>
+                                <p>¥${product.price.toLocaleString()} × ${quantity}</p>
+                            </div>
+                        </div>
+                        <div class="item-total">¥${itemTotal.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+
+            orderItems.innerHTML = itemsHTML;
+            document.getElementById('total-amount').textContent = `¥${total.toLocaleString()}`;
+            totalSection.style.display = 'block';
+        }
+
+        // 画像変更モーダルを開く
+        function openImageUpload(productId) {
+            const product = products.find(p => p.id === productId);
+            selectedProductForImage = productId;
+            document.getElementById('selected-product-name').textContent = product.name;
+            document.getElementById('image-url').value = product.image;
+            document.getElementById('image-upload-modal').style.display = 'flex';
+        }
+
+        // 画像変更モーダルを閉じる
+        function closeImageUpload() {
+            document.getElementById('image-upload-modal').style.display = 'none';
+            selectedProductForImage = null;
+        }
+
+        // 商品画像を更新
+        function updateProductImage() {
+            const newImageUrl = document.getElementById('image-url').value;
+            if (newImageUrl && selectedProductForImage) {
+                const product = products.find(p => p.id === selectedProductForImage);
+                product.image = newImageUrl;
+                renderProducts();
+                renderOrderSummary();
+                closeImageUpload();
+            }
+        }
+
+        // 注文完了
+        function completeOrder() {
+            const name = document.getElementById('customer-name').value;
+            const email = document.getElementById('customer-email').value;
+            const phone = document.getElementById('customer-phone').value;
+
+            if (!name || !email) {
+                alert('お名前とメールアドレスを入力してください。');
+                return;
+            }
+
+            if (Object.keys(cart).length === 0) {
+                alert('商品を選択してください。');
+                return;
+            }
+
+            // 注文詳細を表示
+            const total = Object.entries(cart).reduce((sum, [cartKey, quantity]) => {
+                const [productId] = cartKey.split('_');
+                const product = products.find(p => p.id === parseInt(productId));
+                return sum + (product.price * quantity);
+            }, 0);
+
+            document.getElementById('order-details').innerHTML = `
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3>注文詳細</h3>
+                    <p><strong>注文者:</strong> ${name}</p>
+                    <p><strong>メール:</strong> ${email}</p>
+                    ${phone ? `<p><strong>電話:</strong> ${phone}</p>` : ''}
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #2196f3; margin-top: 10px;">
+                        <strong>合計金額: ¥${total.toLocaleString()}</strong>
+                    </p>
+                </div>
+            `;
+
+            document.getElementById('success-modal').style.display = 'flex';
+        }
+
+        // 新しい注文を開始
+        function startNewOrder() {
+            cart = {};
+            document.getElementById('customer-name').value = '';
+            document.getElementById('customer-email').value = '';
+            document.getElementById('customer-phone').value = '';
+            document.getElementById('success-modal').style.display = 'none';
+            renderProducts();
+            renderOrderSummary();
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            renderOrderSummary();
+        });
+    </script>
+</body>
+</html>
